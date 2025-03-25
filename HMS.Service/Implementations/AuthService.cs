@@ -91,23 +91,23 @@ namespace HMS.Service.Implementations
                 user.Guest = guestUser;
             }
 
-            // Create user with password
+            
             var result = await _userManager.CreateAsync(user, registrationRequestDto.Password);
 
             if (!result.Succeeded)
             {
-                // Log or handle errors
+               
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                 throw new InvalidOperationException($"User creation failed: {errors}");
             }
 
-            // Ensure the role exists before assigning it
+            
             if (!await _roleManager.RoleExistsAsync(registrationRequestDto.Role))
             {
                 await _roleManager.CreateAsync(new IdentityRole(registrationRequestDto.Role));
             }
 
-            // Assign role to user
+            
             await _userManager.AddToRoleAsync(user, registrationRequestDto.Role);
 
         }

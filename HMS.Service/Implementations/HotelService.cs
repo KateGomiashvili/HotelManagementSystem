@@ -22,14 +22,14 @@ namespace HMS.Service.Implementations
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
 
-        //private readonly IImageService _imageService;
+       
 
         public HotelService(IHotelRepository hotelRepository, IMapper mapper, ApplicationDbContext context)
         {
             _hotelRepository = hotelRepository;
             _mapper = mapper;
             _context = context;
-            // _imageService = imageService;
+            
         }
         public async Task AddNewHotel(HotelForCreatingDto hotelForCreatingDto)
         {
