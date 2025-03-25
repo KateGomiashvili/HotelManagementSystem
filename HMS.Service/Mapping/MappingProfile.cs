@@ -34,6 +34,7 @@ namespace HMS.Service.Mapping
             //.ForMember(dest => dest.Rooms, opt => opt.MapFrom(src => src.Rooms)); // Map Hotel.Rooms to HotelForGettingDto.Rooms
             CreateMap<Hotel, HotelForGettingDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
+            CreateMap<HotelForGettingDto, Hotel>();
             CreateMap<RegistrationRequestDto, ApplicationUser>()
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
             //.ForMember(dest => dest.UserName, opt => opt.MapFrom(src =>

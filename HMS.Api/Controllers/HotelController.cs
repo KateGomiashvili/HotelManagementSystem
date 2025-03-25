@@ -42,6 +42,14 @@ namespace HMS.Api.Controllers
             return StatusCode(response.StatusCode, response);
         }
 
+        [HttpGet("search")]
+        public async Task<IActionResult> GetHotelsByLocation([FromQuery] string? city, [FromQuery] string? country, [FromQuery] int pageNumber, [FromQuery] int pageSize)
+        {
+           var result = await _hotelService.GetHotelsByFilter(city, country, pageNumber, pageSize);
+            ApiResponse response = new(ApiResponseMessage.successMessage, result, 200, isSuccess: true);
+            return StatusCode(response.StatusCode, response);
+        }
+
 
 
 

@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,7 +29,7 @@ namespace HMS.Service.Implementations
             _hotelRepository = hotelRepository;
             _mapper = mapper;
             _context = context;
-           // _imageService = imageService;
+            // _imageService = imageService;
         }
         public async Task AddNewHotel(HotelForCreatingDto hotelForCreatingDto)
         {
@@ -73,6 +74,42 @@ namespace HMS.Service.Implementations
                 throw new NotFoundException($"Hotels not found");
             }
         }
+        public async Task<List<HotelForGettingDto>> GetHotelsByFilter(
+            string? cityName,
+            string? countryName,
+            int pageNumber,
+            int pageSize)
+        {
+            var result = new List<HotelForGettingDto>();
+            if (string.IsNullOrWhiteSpace(cityName) && string.IsNullOrWhiteSpace(countryName))
+            {
+                throw new BadRequestException("At least one filter (city or country) must be provided");
+            }
+            List<Hotel> hotels = await _hotelRepository.GetAllAsync(pageNumber, pageSize);
+            var mappedData = _mapper.Map<List<HotelForGettingDto>>(hotels);
+            var query = mappedData.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(cityName))
+            {
+                query = query.Where(h => h.City.Equals(cityName, StringComparison.OrdinalIgnoreCase));
+            }
+            if(!string.IsNullOrWhiteSpace(countryName))
+            {
+                query = query.Where(h => h.Country.Equals(countryName, StringComparison.OrdinalIgnoreCase));
+            }
+            return query.ToList();
+
+
+
+
+
+
+
+
+
+
+
+
+        }
 
 
         public Task<HotelForGettingDto> GetSingleHotel(int teacherId)
@@ -80,9 +117,9 @@ namespace HMS.Service.Implementations
             throw new NotImplementedException();
         }
 
-      
-        
-            public async Task SaveHotel() => await _hotelRepository.Save();
+
+
+        public async Task SaveHotel() => await _hotelRepository.Save();
 
         public async Task UpdateHotel(HotelForUpdatingDto hotelForUpdatingDto)
         {
@@ -92,6 +129,6 @@ namespace HMS.Service.Implementations
             var entityData = _mapper.Map<Hotel>(hotelForUpdatingDto);
             await _hotelRepository.Update(entityData);
         }
-        
+
     }
 }

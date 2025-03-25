@@ -1,7 +1,10 @@
-﻿using HMS.Models.Entities;
+﻿using HMS.Models.Dtos.Hotels;
+using HMS.Models.Entities;
 using HMS.Repository.Data;
 using HMS.Repository.Interfaces;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
+
 using System.Linq.Expressions;
 
 namespace HMS.Repository.Implementations
@@ -27,5 +30,6 @@ namespace HMS.Repository.Implementations
                 entityFromDb.Rating = entity.Rating;
             }
         }
+        
     }
 }
