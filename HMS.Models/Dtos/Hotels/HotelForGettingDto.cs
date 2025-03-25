@@ -23,6 +23,6 @@ namespace HMS.Models.Dtos.Hotels
 
         public string Address { get; set; }
         public List<RoomForGettingDto> Rooms { get; set; } = new();
-        public List<UserForGettingDto> Managers { get; set; } = new();
+        public List<ManagerDto> Managers { get; set; } = new();
     }
 }

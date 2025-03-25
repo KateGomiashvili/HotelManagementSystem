@@ -21,7 +21,7 @@ namespace HMS.Api.Middleware
                 await HandleException(context, ex);
             }
         }
-        private Task HandleException(HttpContext context, Exception ex)
+        private async Task HandleException(HttpContext context, Exception ex)
         {
             ApiResponse response = new();
 
@@ -45,6 +45,12 @@ namespace HMS.Api.Middleware
                     response.IsSuccess = false;
                     response.Result = null;
                     break;
+                case IncorrectPasswordException:
+                    response.StatusCode = Convert.ToInt32(HttpStatusCode.Unauthorized);
+                    response.Message = ex.Message;
+                    response.IsSuccess = false;
+                    response.Result = null;
+                    break;
                 default:
                     response.StatusCode = Convert.ToInt32(HttpStatusCode.InternalServerError);
                     response.Message = ex.Message;
@@ -56,7 +62,7 @@ namespace HMS.Api.Middleware
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = response.StatusCode;
 
-            return context.Response.WriteAsJsonAsync(response);
+            await context.Response.WriteAsJsonAsync(response);
         }
     }
 }

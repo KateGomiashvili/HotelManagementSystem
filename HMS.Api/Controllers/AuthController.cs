@@ -29,7 +29,7 @@ namespace HMS.Api.Controllers
         //    return Ok();
         //}
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromForm] LoginRequestDto model)
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto model)
         {
             var result = await _authService.Login(model);
             return Ok(result);

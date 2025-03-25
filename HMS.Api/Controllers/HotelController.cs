@@ -41,13 +41,20 @@ namespace HMS.Api.Controllers
             ApiResponse response = new(ApiResponseMessage.successMessage, result, 200, isSuccess: true);
             return StatusCode(response.StatusCode, response);
         }
+
+
+
+
         [HttpPost("{hotelId}/rooms")]
-        public async Task<IActionResult> AddRoom([FromForm] RoomForCreatingDto model)
+        public async Task<IActionResult> AddRoom(int hotelId, [FromBody] RoomForCreatingDto model)
         {
+           // await _hotelService.ExistsAsync(hotelId); // If hotel does not exist, exception will be thrown automatically
+
             await _roomService.AddNewRoom(model);
             await _roomService.SaveRoom();
-            ApiResponse response = new(ApiResponseMessage.successMessage, model, 201, isSuccess: true);
-            return StatusCode(Response.StatusCode, response);
+
+            ApiResponse response = new ApiResponse(ApiResponseMessage.successMessage, model, 201, true);
+            return StatusCode(201, response);
         }
         [HttpGet("{hotelId}/rooms")]
         public async Task<IActionResult> GetRooms(int hotelId, [FromQuery] int pageNumber, [FromQuery] int pageSize)

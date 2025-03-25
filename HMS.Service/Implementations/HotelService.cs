@@ -2,6 +2,7 @@
 using HMS.Models.Dtos.Hotels;
 using HMS.Models.Dtos.Rooms;
 using HMS.Models.Entities;
+using HMS.Repository.Data;
 using HMS.Repository.Interfaces;
 using HMS.Service.Exceptions;
 using HMS.Service.Interfaces;
@@ -18,12 +19,15 @@ namespace HMS.Service.Implementations
     {
         private readonly IHotelRepository _hotelRepository;
         private readonly IMapper _mapper;
+        private readonly ApplicationDbContext _context;
+
         //private readonly IImageService _imageService;
 
-        public HotelService(IHotelRepository hotelRepository, IMapper mapper)
+        public HotelService(IHotelRepository hotelRepository, IMapper mapper, ApplicationDbContext context)
         {
             _hotelRepository = hotelRepository;
             _mapper = mapper;
+            _context = context;
            // _imageService = imageService;
         }
         public async Task AddNewHotel(HotelForCreatingDto hotelForCreatingDto)
@@ -46,10 +50,17 @@ namespace HMS.Service.Implementations
             throw new NotImplementedException();
         }
 
+        public async Task<bool> ExistsAsync(int hotelId)
+        {
+            return await _hotelRepository.ExistsAsync(h => h.Id == hotelId);
+        }
+
         public async Task<List<HotelForGettingDto>> GetMultipleHotels(int pageNumber, int pageSize)
         {
-            List<Hotel> entityData = await _hotelRepository.GetAllAsync(pageNumber, pageSize, includeProperties: "Rooms");
-            List<HotelForGettingDto> result = new();
+            var result = new List<HotelForGettingDto>();
+            List<Hotel> entityData = await _hotelRepository
+            .GetAllAsync(pageNumber, pageSize, includeProperties: "Managers,Rooms");
+
 
             if (entityData.Any())
             {
@@ -61,7 +72,6 @@ namespace HMS.Service.Implementations
             {
                 throw new NotFoundException($"Hotels not found");
             }
-
         }
 
 

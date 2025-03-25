@@ -11,5 +11,6 @@ namespace HMS.Repository.Interfaces
         Task AddAsync(T entity);
         void Remove(T entity);
         void RemoveRange(IEnumerable<T> entities);
+        Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate);
     }
 }

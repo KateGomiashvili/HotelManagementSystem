@@ -12,5 +12,6 @@ namespace HMS.Service.Interfaces
         Task UpdateHotel(HotelForUpdatingDto hotelForUpdatingDto);
         Task DeleteHotel(int hotelId);
         Task SaveHotel();
+        Task<bool> ExistsAsync(int value);
     }
 }

@@ -48,7 +48,10 @@ namespace HMS.Service.Implementations
                 var isValid = await _userManager.CheckPasswordAsync(user, loginRequestDto.Password);
 
                 if (!isValid)
-                    return new LoginResponseDto() { Token = string.Empty };
+                {
+                    throw new IncorrectPasswordException();
+                } 
+
 
                 var roles = await _userManager.GetRolesAsync(user);
                 var token = _jwtTokenGenerator.GenerateToken(user, roles);
@@ -76,8 +79,10 @@ namespace HMS.Service.Implementations
             user.Email = registrationRequestDto.Email;
             if (registrationRequestDto.Role == "Manager")
             {
-                user.Manager.UserId = user.Id;
-                user.Manager.HotelId =  registrationRequestDto.HotelId ?? 1;
+                Manager managerUser = new Manager();
+                managerUser.UserId = user.Id;
+                managerUser.HotelId =  registrationRequestDto.HotelId ?? 1;
+                user.Manager = managerUser;
             }
             else if (registrationRequestDto.Role == "Guest")
             {

@@ -18,7 +18,7 @@ namespace HMS.Models.Dtos.Rooms
         public decimal Price { get; set; }
 
         public int HotelId { get; set; }
-        public Hotel Hotel { get; set; }
+        //public Hotel Hotel { get; set; }
         public List<BookingForGettingDto> Bookings { get; set; }
     }
 }

@@ -2,7 +2,6 @@
 using HMS.Models.Dtos.Hotels;
 using HMS.Models.Dtos.Rooms;
 using HMS.Models.Entities;
-using HMS.Repository.Implementations;
 using HMS.Repository.Interfaces;
 using HMS.Service.Exceptions;
 using HMS.Service.Interfaces;
@@ -20,12 +19,15 @@ namespace HMS.Service.Implementations
     {
         private readonly IRoomRepository _roomRepository;
         private readonly IMapper _mapper;
+        private readonly IHotelService _hotelService;
+
         //private readonly IImageService _imageService;
 
-        public RoomService(IRoomRepository roomRepository, IMapper mapper)
+        public RoomService(IRoomRepository roomRepository, IMapper mapper, IHotelService hotelService)
         {
             _roomRepository = roomRepository;
             _mapper = mapper;
+            _hotelService = hotelService;
             // _imageService = imageService;
         }
         public async Task AddNewRoom(RoomForCreatingDto roomForCreatingDto)
@@ -33,6 +35,11 @@ namespace HMS.Service.Implementations
             if (roomForCreatingDto is null)
             {
                 throw new BadRequestException($"{roomForCreatingDto} is an invalid argument");
+            }
+            var requestHotelId = roomForCreatingDto.HotelId;
+            if(!await _hotelService.ExistsAsync(requestHotelId))
+            {
+                throw new NotFoundException($"Hotel not found");
             }
             var entityData = _mapper.Map<Room>(roomForCreatingDto);
             await _roomRepository.AddAsync(entityData);

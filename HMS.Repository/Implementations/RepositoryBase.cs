@@ -19,6 +19,11 @@ namespace HMS.Repository.Implementations
         }
         public async Task AddAsync(T entity) => await _dbSet.AddAsync(entity);
 
+        public async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.AnyAsync(predicate);
+        }
+
         public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>> filter, int pageNumber, int pageSize, string includeProperties = null)
         {
             IQueryable<T> query = _dbSet;
@@ -59,6 +64,7 @@ namespace HMS.Repository.Implementations
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
                     .ToListAsync();
+                
             }
 
             return await
