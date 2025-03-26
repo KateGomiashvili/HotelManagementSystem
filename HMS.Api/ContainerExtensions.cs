@@ -48,6 +48,7 @@ namespace HMS.Api
         {
             builder.Services.AddScoped<IHotelService, HotelService>();
             builder.Services.AddScoped<IRoomService, RoomService>();
+            builder.Services.AddScoped<IBookingService, BookingService>();
         }
         public static void AddJwtTokenGenerator(this WebApplicationBuilder builder)
         {

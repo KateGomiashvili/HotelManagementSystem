@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HMS.Models.Dtos.Booking;
 using HMS.Models.Dtos.Hotels;
 using HMS.Models.Dtos.Identity;
 using HMS.Models.Dtos.Rooms;
@@ -22,6 +23,8 @@ namespace HMS.Service.Mapping
             CreateMap<RoomForCreatingDto, Room>().ReverseMap();
             CreateMap<RoomForGettingDto, Room>().ReverseMap();
             CreateMap<HotelForCreatingDto, Hotel>().ReverseMap();
+            CreateMap<BookingForCreatingDto, Booking>();
+            CreateMap<Booking, BookingForGettingDto>();
             
             CreateMap<Hotel, HotelForGettingDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));

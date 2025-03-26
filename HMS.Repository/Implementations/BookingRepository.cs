@@ -22,5 +22,14 @@ namespace HMS.Repository.Implementations
                 entityFromDb.CheckInDate = entity.CheckInDate;
             }
         }
+        public async Task<bool> IsRoomAvailableAsync(int roomId, DateTime checkInDate, DateTime checkOutDate)
+        {
+            var conflictingReservations = await _context.Bookings
+                .Where(r => r.RoomId == roomId)
+                .Where(r => (checkOutDate > r.CheckInDate && checkInDate < r.CheckOutDate))
+                .AnyAsync();
+
+            return !conflictingReservations;
+        }
     }
 }

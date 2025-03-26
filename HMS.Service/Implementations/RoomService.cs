@@ -100,7 +100,7 @@ namespace HMS.Service.Implementations
         //    }
         //}
 
-        public Task<RoomForGettingDto> GetSingleRoom(int teacherId)
+        public Task<RoomForGettingDto> GetSingleRoom(int roomId)
         {
             throw new NotImplementedException();
         }
