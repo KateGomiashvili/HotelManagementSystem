@@ -17,7 +17,7 @@ namespace HMS.Service.Interfaces
         Task<BookingForGettingDto> GetSingleReservation(int bookingId);
         
         Task AddNewReservation(BookingForCreatingDto bookingForCreatingDto);
-        Task UpdateReservation(BookingForUpdatingDto bookingForUpdatingDto);
+        Task UpdateReservation(int bookingId, DateTime newCheckInDate, DateTime newCheckOutDate);
         Task DeleteReservation(int bookingId);
         Task SaveBooking();
     }

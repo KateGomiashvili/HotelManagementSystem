@@ -7,6 +7,7 @@ using HMS.Repository.Interfaces;
 using HMS.Service.Exceptions;
 using HMS.Service.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +45,7 @@ namespace HMS.Service.Implementations
             }
             var entityData = _mapper.Map<Hotel>(hotelForCreatingDto);
             await _hotelRepository.AddAsync(entityData);
-        }
+        }  //Add hotel
 
         public Task DeleteHotel(int hotelId)
         {

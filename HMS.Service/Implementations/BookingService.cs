@@ -4,9 +4,11 @@ using AutoMapper;
 using HMS.Models.Dtos.Booking;
 using HMS.Models.Entities;
 using HMS.Repository.Data;
+using HMS.Repository.Implementations;
 using HMS.Repository.Interfaces;
 using HMS.Service.Exceptions;
 using HMS.Service.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace HMS.Service.Implementations
 {
@@ -80,19 +82,46 @@ namespace HMS.Service.Implementations
             throw new NotImplementedException();
         }
 
-        public Task<BookingForGettingDto> GetSingleReservation(int bookingId)
+        public async Task<BookingForGettingDto> GetSingleReservation(int bookingId)
         {
-            throw new NotImplementedException();
+            if (bookingId < 1)
+                throw new BadRequestException($"{bookingId} is an invalid argument");
+            var entityData = await _bookingRepository.GetAsync(b => b.Id==bookingId);
+            if(entityData is null)
+            {
+                throw new NotFoundException("Reservation not found");
+            }
+            var mappedData = _mapper.Map<BookingForGettingDto>(entityData);
+            return mappedData;
         }
 
-        public Task SaveBooking()
-        {
-            throw new NotImplementedException();
-        }
+        public async Task SaveBooking() => await _bookingRepository.Save();
 
-        public Task UpdateReservation(BookingForUpdatingDto bookingForUpdatingDto)
+        public async Task UpdateReservation(int bookingId, DateTime newCheckInDate, DateTime newCheckOutDate)
         {
-            throw new NotImplementedException();
+            if (bookingId<1)
+                throw new BadRequestException($"{bookingId} is an invalid argument");
+            if (newCheckOutDate <= newCheckInDate)
+                throw new BadRequestException("Check-out date must be after check-in date");
+
+            var reservationToUpdate = await _context.Bookings
+        .FirstOrDefaultAsync(r => r.Id == bookingId);
+            if (reservationToUpdate == null)
+                throw new NotFoundException("Reservation not found");
+            bool hasConflict = await _context.Bookings
+        .AnyAsync(r => r.RoomId == reservationToUpdate.RoomId
+                    && r.Id != bookingId
+                    && newCheckInDate < r.CheckOutDate
+                    && newCheckOutDate > r.CheckInDate);
+            if (hasConflict)
+                throw new ConflictException();
+            BookingForUpdatingDto bookingForUpdatingDto = new BookingForUpdatingDto
+            {
+                CheckInDate = newCheckInDate,
+                CheckOutDate = newCheckOutDate
+            };
+            var entityData = _mapper.Map<Booking>(bookingForUpdatingDto);
+            await _bookingRepository.Update(entityData);
         }
         public async Task<List<BookingForGettingDto>> GetReservationsByFilter(  //filter
             string? guestId,

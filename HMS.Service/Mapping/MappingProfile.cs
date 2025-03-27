@@ -25,7 +25,9 @@ namespace HMS.Service.Mapping
             CreateMap<HotelForCreatingDto, Hotel>().ReverseMap();
             CreateMap<BookingForCreatingDto, Booking>();
             CreateMap<Booking, BookingForGettingDto>();
-            
+            CreateMap<BookingForUpdatingDto, Booking>();
+            CreateMap<Booking, BookingForUpdatingDto>();
+
             CreateMap<Hotel, HotelForGettingDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id));
             CreateMap<HotelForGettingDto, Hotel>();
