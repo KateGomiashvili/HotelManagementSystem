@@ -20,17 +20,19 @@ namespace HMS.Service.Implementations
     public class HotelService : IHotelService
     {
         private readonly IHotelRepository _hotelRepository;
+        private readonly IRoomRepository _roomRepository;
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
 
-       
 
-        public HotelService(IHotelRepository hotelRepository, IMapper mapper, ApplicationDbContext context)
+
+        public HotelService(IHotelRepository hotelRepository, IMapper mapper, ApplicationDbContext context, IRoomRepository roomRepository)
         {
             _hotelRepository = hotelRepository;
             _mapper = mapper;
             _context = context;
-            
+            _roomRepository = roomRepository;
+
         }
         public async Task AddNewHotel(HotelForCreatingDto hotelForCreatingDto)
         {
@@ -47,9 +49,23 @@ namespace HMS.Service.Implementations
             await _hotelRepository.AddAsync(entityData);
         }  //Add hotel
 
-        public Task DeleteHotel(int hotelId)
+        public async Task DeleteHotel(int hotelId)  //delete hotel
         {
-            throw new NotImplementedException();
+            if (hotelId <= 0)
+                throw new BadRequestException($"{hotelId} is an invalid argument");
+            var hotelToDelete = await _hotelRepository.GetAsync(h => h.Id == hotelId);
+            if (hotelToDelete is null)
+            {
+                throw new NotFoundException("Hotel not found");
+            }
+            List<Room> rooms = await _roomRepository.GetAllAsync(r => r.HotelId == hotelId, includeProperties: "Bookings");
+            bool hasBookings = rooms.Any(r =>
+                r.Bookings?.Any(b => b.CheckOutDate >= DateTime.Today) ?? false);
+            if (hasBookings)                     
+            {
+                throw new ConflictException("Unable to delete Hotel with active reservations");
+            }
+            _hotelRepository.Remove(hotelToDelete);
         }
 
         public async Task<bool> ExistsAsync(int hotelId)
@@ -93,7 +109,7 @@ namespace HMS.Service.Implementations
             {
                 query = query.Where(h => h.City.Equals(cityName, StringComparison.OrdinalIgnoreCase));
             }
-            if(!string.IsNullOrWhiteSpace(countryName))
+            if (!string.IsNullOrWhiteSpace(countryName))
             {
                 query = query.Where(h => h.Country.Equals(countryName, StringComparison.OrdinalIgnoreCase));
             }
@@ -113,9 +129,22 @@ namespace HMS.Service.Implementations
         }
 
 
-        public Task<HotelForGettingDto> GetSingleHotel(int teacherId)
+        public async Task<HotelForGettingDto> GetSingleHotel(int hotelId)
         {
-            throw new NotImplementedException();
+            HotelForGettingDto result = new();
+
+            if (hotelId <= 0)
+                throw new BadRequestException($"{hotelId} is an invalid argument");
+
+            Hotel entityData = await _hotelRepository.GetAsync(x => x.Id == hotelId, includeProperties: "Rooms,Managers");
+
+            if (entityData is null)
+                throw new NotFoundException("Hotel not found");
+
+
+            result = _mapper.Map<HotelForGettingDto>(entityData);
+
+            return result;
         }
 
 

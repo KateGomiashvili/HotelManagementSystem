@@ -53,7 +53,7 @@ namespace HMS.Service.Implementations
             bookingForCreatingDto.CheckOutDate);
             if (!isAvailable)
             {
-                throw new ConflictException();
+                throw new ConflictException("Room is not available");
             }
 
             var entityData = _mapper.Map<Booking>(bookingForCreatingDto);
@@ -114,7 +114,7 @@ namespace HMS.Service.Implementations
                     && newCheckInDate < r.CheckOutDate
                     && newCheckOutDate > r.CheckInDate);
             if (hasConflict)
-                throw new ConflictException();
+                throw new ConflictException("Room is not available");
             BookingForUpdatingDto bookingForUpdatingDto = new BookingForUpdatingDto
             {
                 CheckInDate = newCheckInDate,

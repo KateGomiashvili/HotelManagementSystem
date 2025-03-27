@@ -2,6 +2,7 @@
 using HMS.Models.Dtos.Hotels;
 using HMS.Models.Dtos.Rooms;
 using HMS.Service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HMS.Api.Controllers
@@ -35,7 +36,15 @@ namespace HMS.Api.Controllers
             ApiResponse response = new(ApiResponseMessage.successMessage, model, 200, isSuccess: true);
             return StatusCode(response.StatusCode, response);
         }
-
+        [Authorize(Roles = "Manager")]
+        [HttpDelete("{hotelId}")]
+        public async Task<IActionResult> DeleteHotel([FromRoute] int hotelId)
+        {
+            await _hotelService.DeleteHotel(hotelId);
+            await _hotelService.SaveHotel();
+            ApiResponse response = new(ApiResponseMessage.successMessage, hotelId, 204, isSuccess: true);
+            return StatusCode(response.StatusCode, response);
+        }
 
         [HttpGet]
         public async Task<IActionResult> Gethotels([FromQuery] int pageNumber, [FromQuery] int pageSize)  //get all hotels

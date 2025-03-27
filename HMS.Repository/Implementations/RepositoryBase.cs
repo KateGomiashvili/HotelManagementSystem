@@ -47,6 +47,23 @@ namespace HMS.Repository.Implementations
 
             return entities;
         }
+        public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>> filter = null, string includeProperties = null)
+        {
+            IQueryable<T> query = _dbSet;
+            if (!string.IsNullOrWhiteSpace(includeProperties))
+            {
+                foreach (var includeProperty in includeProperties.Split(new char[] { ',' },
+                    StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProperty);
+                }
+            }
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+            return await query.ToListAsync();
+        }
 
         public async Task<List<T>> GetAllAsync(int pageNumber, int pageSize, string includeProperties = null)
         {
@@ -64,7 +81,7 @@ namespace HMS.Repository.Implementations
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize)
                     .ToListAsync();
-                
+
             }
 
             return await
