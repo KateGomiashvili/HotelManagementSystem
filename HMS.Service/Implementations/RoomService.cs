@@ -2,6 +2,7 @@
 using HMS.Models.Dtos.Hotels;
 using HMS.Models.Dtos.Rooms;
 using HMS.Models.Entities;
+using HMS.Repository.Implementations;
 using HMS.Repository.Interfaces;
 using HMS.Service.Exceptions;
 using HMS.Service.Interfaces;
@@ -69,7 +70,7 @@ namespace HMS.Service.Implementations
 
         public async Task<List<RoomForGettingDto>> GetRoomsByHotelIdAsync(int hotelId, int pageNumber, int pageSize)
         {
-            List<Room> entityData = await _roomRepository.GetAllAsync(r=> r.HotelId==hotelId, pageNumber, pageSize, includeProperties: "Bookings");
+            List<Room> entityData = await _roomRepository.GetAllAsync(r=> r.HotelId==hotelId, pageNumber, pageSize);
             List<RoomForGettingDto> result = new();
 
             if (entityData.Any())
@@ -107,9 +108,13 @@ namespace HMS.Service.Implementations
 
         public async Task SaveRoom() => await _roomRepository.Save();
 
-        public Task UpdateRoom(RoomForUpdateDto roomForUpdatingDto)
+        public async Task UpdateRoom(RoomForUpdateDto roomForUpdatingDto)
         {
-            throw new NotImplementedException();
+            if (roomForUpdatingDto is null)
+                throw new BadRequestException($"{roomForUpdatingDto} is an invalid argument");
+
+            var entityData = _mapper.Map<Room>(roomForUpdatingDto);
+            await _roomRepository.Update(entityData);
         }
     }
 }

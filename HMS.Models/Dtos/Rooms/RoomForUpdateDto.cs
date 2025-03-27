@@ -9,7 +9,7 @@ namespace HMS.Models.Dtos.Rooms
 {
     public class RoomForUpdateDto
     {
-
+        public int Id { get; set; }
         public string RoomType { get; set; }
 
         public bool IsAvailable { get; set; } = true;

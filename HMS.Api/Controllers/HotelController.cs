@@ -104,5 +104,13 @@ namespace HMS.Api.Controllers
             ApiResponse response = new(ApiResponseMessage.successMessage, result, 200, isSuccess: true);
             return StatusCode(response.StatusCode, response);
         }
+        [HttpPut("{hotelId}/rooms")]  //update room
+        public async Task<IActionResult> UpdateRoom(RoomForUpdateDto model)
+        {
+            await _roomService.UpdateRoom(model);
+            await _roomService.SaveRoom();
+            ApiResponse response = new(ApiResponseMessage.successMessage, model, 200, isSuccess: true);
+            return StatusCode(response.StatusCode, response);
+        }
     }
 }

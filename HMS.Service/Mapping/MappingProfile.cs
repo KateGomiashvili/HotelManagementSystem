@@ -43,6 +43,8 @@ namespace HMS.Service.Mapping
             CreateMap<Manager, ManagerDto>()
                 .ForMember(dest=> dest.Id, opt => opt.MapFrom(src => src.UserId));
             CreateMap<Room, RoomForGettingDto>();
+            CreateMap<Room, RoomForUpdateDto>();
+            CreateMap<RoomForUpdateDto, Room>();
         }
     }
 }
