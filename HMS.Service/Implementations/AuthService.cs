@@ -118,29 +118,29 @@ namespace HMS.Service.Implementations
 
 
 
-        public async Task RegisterAdmin(RegistrationRequestDto registrationRequestDto)
-        {
-            var user = _mapper.Map<ApplicationUser>(registrationRequestDto);
-            var result = await _userManager.CreateAsync(user, registrationRequestDto.Password);
+        //public async Task RegisterAdmin(RegistrationRequestDto registrationRequestDto)
+        //{
+        //    var user = _mapper.Map<ApplicationUser>(registrationRequestDto);
+        //    var result = await _userManager.CreateAsync(user, registrationRequestDto.Password);
 
-            if (result.Succeeded)
-            {
-                var userToReturn = await _context.ApplicationUsers
-                    .FirstOrDefaultAsync(x => x.Email.ToLower().Trim() == registrationRequestDto.Email.ToLower().Trim());
+        //    if (result.Succeeded)
+        //    {
+        //        var userToReturn = await _context.ApplicationUsers
+        //            .FirstOrDefaultAsync(x => x.Email.ToLower().Trim() == registrationRequestDto.Email.ToLower().Trim());
 
-                if (userToReturn is not null)
-                {
-                    if (!await _roleManager.RoleExistsAsync(_adminRole))
-                        await _roleManager.CreateAsync(new IdentityRole(_adminRole));
+        //        if (userToReturn is not null)
+        //        {
+        //            if (!await _roleManager.RoleExistsAsync(_adminRole))
+        //                await _roleManager.CreateAsync(new IdentityRole(_adminRole));
 
-                    await _userManager.AddToRoleAsync(userToReturn, _adminRole);
-                }
-            }
-            else
-            {
-                throw new InvalidOperationException(result.Errors.FirstOrDefault().Description);
-            }
-        }
+        //            await _userManager.AddToRoleAsync(userToReturn, _adminRole);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        throw new InvalidOperationException(result.Errors.FirstOrDefault().Description);
+        //    }
+        //}
     }
 }
 

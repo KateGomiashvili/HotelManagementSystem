@@ -34,11 +34,15 @@ namespace HMS.Service.Implementations
             _roomRepository = roomRepository;
 
         }
-        public async Task AddNewHotel(HotelForCreatingDto hotelForCreatingDto)
+        public async Task AddNewHotel(HotelForCreatingDto hotelForCreatingDto)  //Add hotel
         {
             if (hotelForCreatingDto is null)
             {
                 throw new BadRequestException($"{hotelForCreatingDto} is an invalid argument");
+            }
+            if(hotelForCreatingDto.Rating<1 && hotelForCreatingDto.Rating>5)
+            {
+                throw new BadRequestException("Rating value is invalid.");
             }
             var hotelWithSameName = await _hotelRepository.GetAsync(x => x.Name.ToLower().Trim() == hotelForCreatingDto.Name.ToLower().Trim());
             if (hotelWithSameName is not null)
@@ -65,7 +69,9 @@ namespace HMS.Service.Implementations
             {
                 throw new ConflictException("Unable to delete Hotel with active reservations");
             }
+            _roomRepository.RemoveRange(rooms);
             _hotelRepository.Remove(hotelToDelete);
+            
         }
 
         public async Task<bool> ExistsAsync(int hotelId)

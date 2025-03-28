@@ -1,7 +1,9 @@
 ﻿using HMS.Models.Dtos.Booking;
 using HMS.Models.Dtos.Hotels;
 using HMS.Models.Dtos.Rooms;
+using HMS.Models.Entities;
 using HMS.Service.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +22,7 @@ namespace HMS.Api.Controllers
             _roomService = roomService;
             _bookingService = bookingService;
         }
+        [Authorize(Roles ="Manager")]  //create hotel
         [HttpPost]
         public async Task<IActionResult> AddHotel([FromForm] HotelForCreatingDto model)  //Add hotel
         {
@@ -28,6 +31,7 @@ namespace HMS.Api.Controllers
             ApiResponse response = new(ApiResponseMessage.successMessage, model, 201, isSuccess: true);
             return StatusCode(response.StatusCode, response);
         }
+        [Authorize(Roles = "Manager")]
         [HttpPut]
         public async Task<IActionResult> UpdateHotel([FromBody] HotelForUpdatingDto model)  //Update hotel
         {
@@ -38,7 +42,7 @@ namespace HMS.Api.Controllers
         }
         [Authorize(Roles = "Manager")]
         [HttpDelete("{hotelId}")]
-        public async Task<IActionResult> DeleteHotel([FromRoute] int hotelId)
+        public async Task<IActionResult> DeleteHotel([FromRoute] int hotelId)  //delete hotel
         {
             await _hotelService.DeleteHotel(hotelId);
             await _hotelService.SaveHotel();
@@ -53,6 +57,14 @@ namespace HMS.Api.Controllers
             ApiResponse response = new(ApiResponseMessage.successMessage, result, 200, isSuccess: true);
             return StatusCode(response.StatusCode, response);
         }
+        [HttpGet("{hotelId}")]  //get single hotel
+        public async Task<IActionResult> GetSingleHotelById([FromRoute]int hotelId)
+        {
+            var result = await _hotelService.GetSingleHotel(hotelId);
+            ApiResponse response = new(ApiResponseMessage.successMessage, result, 200, isSuccess: true);
+            return StatusCode(response.StatusCode, response);
+
+        }
 
         [HttpGet("search")]  //Get hotels by location
         public async Task<IActionResult> GetHotelsByLocation([FromQuery] string? city, [FromQuery] string? country, [FromQuery] int pageNumber, [FromQuery] int pageSize)
@@ -62,7 +74,7 @@ namespace HMS.Api.Controllers
             return StatusCode(response.StatusCode, response);
         }
 
-
+        [Authorize(Roles = "Guest")]
         [HttpPost("reserve")]  //add new reservation
         public async Task<IActionResult> Reserve([FromBody] BookingForCreatingDto model)
         {
@@ -73,8 +85,9 @@ namespace HMS.Api.Controllers
             ApiResponse response = new ApiResponse(ApiResponseMessage.successMessage, model, 201, true);
             return StatusCode(201, response);
         }
+        [Authorize(Roles = "Guest")]
         [HttpPut("reserve")]  //Update reservation
-        public  async Task<IActionResult> UpdateReservation([FromForm] int bookingId, [FromForm] DateTime newCheckinDate, [FromForm] DateTime newcheckOutDate)
+        public async Task<IActionResult> UpdateReservation([FromForm] int bookingId, [FromForm] DateTime newCheckinDate, [FromForm] DateTime newcheckOutDate)
         {
             await _bookingService.UpdateReservation(bookingId, newCheckinDate, newcheckOutDate);
             await _bookingService.SaveBooking();
@@ -95,11 +108,11 @@ namespace HMS.Api.Controllers
             ApiResponse response = new ApiResponse(ApiResponseMessage.successMessage, result, 201, true);
             return StatusCode(201, response);
         }
-
+        [Authorize(Roles = "Manager")]
         [HttpPost("{hotelId}/rooms")]  //add room
         public async Task<IActionResult> AddRoom(int hotelId, [FromBody] RoomForCreatingDto model)
         {
-           
+
             await _roomService.AddNewRoom(model);
             await _roomService.SaveRoom();
 
@@ -113,6 +126,7 @@ namespace HMS.Api.Controllers
             ApiResponse response = new(ApiResponseMessage.successMessage, result, 200, isSuccess: true);
             return StatusCode(response.StatusCode, response);
         }
+        [Authorize(Roles = "Manager")]
         [HttpPut("{hotelId}/rooms")]  //update room
         public async Task<IActionResult> UpdateRoom(RoomForUpdateDto model)
         {
@@ -120,6 +134,17 @@ namespace HMS.Api.Controllers
             await _roomService.SaveRoom();
             ApiResponse response = new(ApiResponseMessage.successMessage, model, 200, isSuccess: true);
             return StatusCode(response.StatusCode, response);
+        }
+        [Authorize(Roles = "Manager")]
+        [HttpDelete("{hotelId}/rooms")]
+        public async Task<IActionResult> DeleteRoom(int roomId)
+        {
+            await _roomService.DeleteRoom(roomId);
+            await _roomService.SaveRoom();
+            ApiResponse response = new(ApiResponseMessage.successMessage, roomId, 204, isSuccess: true);
+            return StatusCode(response.StatusCode, response);
+
+
         }
     }
 }

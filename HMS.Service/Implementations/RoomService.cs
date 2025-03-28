@@ -46,9 +46,24 @@ namespace HMS.Service.Implementations
             await _roomRepository.AddAsync(entityData);
         }
 
-        public Task DeleteRoom(int roomId)
+        public async Task DeleteRoom(int roomId)  //delete room
         {
-            throw new NotImplementedException();
+            if (roomId <= 0)
+                throw new BadRequestException($"{roomId} is an invalid argument");
+            var roomToDelete = await _roomRepository.GetAsync(r => r.Id == roomId);
+            if (roomToDelete is null)
+            {
+                throw new NotFoundException("Room not found");
+            }
+            
+            bool hasBookings = roomToDelete.Bookings?.Any(b => b.CheckOutDate >= DateTime.Today) ?? false;
+            //rooms.Any(r =>
+            //    r.Bookings?.Any(b => b.CheckOutDate >= DateTime.Today) ?? false);
+            if (hasBookings)
+            {
+                throw new ConflictException("Unable to delete Hotel with active reservations");
+            }
+            _roomRepository.Remove(roomToDelete);
         }
 
         //public async Task<List<RoomForGettingDto>> GetMultipleRooms(int pageNumber, int pageSize)

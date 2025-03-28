@@ -51,6 +51,12 @@ namespace HMS.Api.Middleware
                     response.IsSuccess = false;
                     response.Result = null;
                     break;
+                case ConflictException:
+                    response.StatusCode = Convert.ToInt32(HttpStatusCode.Conflict);
+                    response.Message = ex.Message;
+                    response.IsSuccess = false;
+                    response.Result = null;
+                    break;
                 default:
                     response.StatusCode = Convert.ToInt32(HttpStatusCode.InternalServerError);
                     response.Message = ex.Message;

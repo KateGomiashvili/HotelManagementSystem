@@ -51,7 +51,7 @@ namespace HMS.Repository.Data
                 .HasMany(h => h.Rooms)
                 .WithOne(r => r.Hotel)
                 .HasForeignKey(r => r.HotelId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
             });
             }
         public static void ConfigureRooms(this ModelBuilder modelBuilder)
